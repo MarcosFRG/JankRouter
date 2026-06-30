@@ -252,7 +252,8 @@
       "targets": [
         { "provider": "hapuppy", "model": "gpt-5-nano" },
         { "provider": "navy", "model": "gpt-5-nano" },
-        { "provider": "paxsenix", "model": "gpt-5-nano" }
+        { "provider": "paxsenix", "model": "gpt-5-nano" },
+        { "provider": "literouter", "model": "gpt-5-nano:free" }
       ]
     },
     {
@@ -270,6 +271,16 @@
       "targets": [
         { "provider": "literouter", "model": "ministral-3b-2512:free" },
         { "provider": "ollama", "model": "ministral-3:3b-cloud" }
+      ]
+    },
+    {
+      "name": "mistral-large-3",
+      "aliases": ["mistral-large", "mistral-3"],
+      "provider": "ollama",
+      "targets": [
+        { "provider": "navy", "model": "mistral-large-2512" },
+        { "provider": "literouter", "model": "mistral-large-3:free" },
+        { "provider": "ollama", "model": "mistral-large-3:675b-cloud" }
       ]
     }
   ]
