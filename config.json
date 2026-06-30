@@ -40,6 +40,14 @@
     "airforce": {
       "url": "https://api.airforce/v1",
       "api_key_env": "A_APIKEY"
+    },
+    "naga": {
+      "url": "https://api.naga.ac/v1",
+      "api_key_env": "NG_APIKEY"
+    },
+    "aqua": {
+      "url": "https://api.aquadevs.com/v1",
+      "api_key_env": "AQ_APIKEY"
     }
   },
   "models": [
@@ -57,8 +65,34 @@
       "targets": [
         { "provider": "navy", "model": "mimo-v2.5" },
         { "provider": "paxsenix", "model": "mimo-v2.5" },
+        { "provider": "aqua", "model": "mimo-v2.5" },
         { "provider": "freetheai", "model": "opc/mimo-v2.5-free" },
         { "provider": "freetheai", "model": "mim/mimo-v2.5" }
+      ]
+    },
+    {
+      "name": "gemini-2.5-flash-lite",
+      "aliases": ["gemini", "gemini-flash"],
+      "targets": [
+        { "provider": "navy", "model": "gemini-2.5-flash-lite" },
+        { "provider": "paxsenix", "model": "gemini-2.5-flash-lite" },
+        { "provider": "literouter", "model": "gemini-2.5-flash-lite:free" },
+        { "provider": "freetheai", "model": "bbl/gemini-2.5-flash-lite" },
+        { "provider": "literouter", "model": "gemini-2.5-flash-lite" }
+      ]
+    },
+    {
+      "name": "deepseek-v3.2",
+      "aliases": ["deepseek-legacy"],
+      "timeout": 55000,
+      "provider": "ollama",
+      "targets": [
+        { "provider": "airforce", "model": "deepseek-v3.2-free" },
+        { "provider": "navy", "model": "deepseek-v3.2" },
+        { "provider": "paxsenix", "model": "deepseek-v3.2" },
+        { "provider": "hapuppy", "model": "deepseek-v3.2" },
+        { "provider": "literouter", "model": "deepseek-v3.2:free" },
+        { "provider": "ollama", "model": "deepseek-v3.2:cloud" }
       ]
     },
     {
@@ -69,6 +103,8 @@
         { "provider": "logfare", "model": "deepseek-v4-flash" },
         { "provider": "navy", "model": "deepseek-v4-flash" },
         { "provider": "hapuppy", "model": "deepseek-v4-flash" },
+        { "provider": "literouter", "model": "deepseek-v4-flash:free" },
+        { "provider": "freetheai", "model": "vova/deepseek-v4-flash" },
         { "provider": "freetheai", "model": "opc/deepseek-v4-flash-free" },
         { "provider": "ollama", "model": "deepseek-v4-flash:cloud" }
       ]
@@ -76,11 +112,14 @@
     {
       "name": "deepseek-v4-pro",
       "aliases": ["deepseek-pro"],
-      "timeout": 50000,
+      "timeout": 55000,
       "provider": "ollama",
       "targets": [
         { "provider": "navy", "model": "deepseek-v4-pro" },
         { "provider": "hapuppy", "model": "deepseek-v4-pro" },
+        { "provider": "paxsenix", "model": "deepseek-v4-pro" },
+        { "provider": "freetheai", "model": "vova/deepseek-v4-pro" },
+        { "provider": "freetheai", "model": "olm/deepseek-v4-pro" },
         { "provider": "ollama", "model": "deepseek-v4-pro:cloud" }
       ]
     },
@@ -109,6 +148,7 @@
       "targets": [
         { "provider": "navy", "model": "gemma-4-31b-it" },
         { "provider": "paxsenix", "model": "gemma-4-31b" },
+        { "provider": "aqua", "model": "gemma-4" },
         { "provider": "hapuppy", "model": "gemma-4-31b-it" },
         { "provider": "literouter", "model": "gemma-4-31b:free" }
       ]
@@ -145,7 +185,34 @@
       "name": "step-3.7-flash",
       "aliases": ["stepfun-3.7-flash"],
       "targets": [
-        { "provider": "freetheai", "model": "kai/stepfun/step-3.7-flash:free" }
+        { "provider": "freetheai", "model": "kai/stepfun/step-3.7-flash:free" },
+        { "provider": "aqua", "model": "step-3.7" }
+      ]
+    },
+    {
+      "name": "grok-4.20-non-reasoning",
+      "aliases": ["grok", "grok-4.20", "grok-fast"],
+      "targets": [
+        { "provider": "aqua", "model": "grok" },
+        { "provider": "navy", "model": "grok-4.20-non-reasoning" },
+        { "provider": "paxsenix", "model": "grok-4.20-fast" }
+      ]
+    },
+    {
+      "name": "grok-4.20-reasoning",
+      "aliases": ["grok-reasoning"],
+      "targets": [
+        { "provider": "aqua", "model": "grok-4.2-thinking" },
+        { "provider": "navy", "model": "grok-4.20-reasoning" }
+      ]
+    },
+    {
+      "name": "grok-4.3",
+      "aliases": ["grok-latest"],
+      "targets": [
+        { "provider": "aqua", "model": "grok-4.3" },
+        { "provider": "navy", "model": "grok-4.3" },
+        { "provider": "paxsenix", "model": "grok-4.3" }
       ]
     },
     {
@@ -153,7 +220,30 @@
       "aliases": ["llama-4", "llama-scout"],
       "targets": [
         { "provider": "hapuppy", "model": "llama-4-scout-17b-16e-instruct" },
-        { "provider": "navy", "model": "llama-4-scout" }
+        { "provider": "navy", "model": "llama-4-scout" },
+        { "provider": "paxsenix", "model": "llama-4-scout" },
+        { "provider": "literouter", "model": "llama-4-scout:free" },
+        { "provider": "naga", "model": "llama-4-scout-17b-16e-instruct:free" }
+      ]
+    },
+    {
+      "name": "llama-4-maverick",
+      "aliases": ["llama-maverick"],
+      "targets": [
+        { "provider": "aqua", "model": "llama-4" },
+        { "provider": "hapuppy", "model": "llama-4-maverick-17b-128e-instruct" },
+        { "provider": "navy", "model": "llama-4-maverick" },
+        { "provider": "paxsenix", "model": "llama-4-maverick" }
+      ]
+    },
+    {
+      "name": "gpt-oss-20b",
+      "aliases": ["gpt-oss"],
+      "targets": [
+        { "provider": "airforce", "model": "gpt-oss-20b" },
+        { "provider": "navy", "model": "gpt-oss-20b" },
+        { "provider": "paxsenix", "model": "gpt-oss-20b" },
+        { "provider": "literouter", "model": "gpt-oss-20b:free" }
       ]
     },
     {
@@ -169,7 +259,8 @@
       "name": "qwen3-coder-30b-a3b",
       "aliases": ["qwen3-coder-30b-a3b-instruct", "qwen3-coder", "qwen-coder"],
       "targets": [
-        { "provider": "paxsenix", "model": "qwen-3-coder-30b-a3b" }
+        { "provider": "paxsenix", "model": "qwen-3-coder-30b-a3b" },
+        { "provider": "aqua", "model": "qwen" }
       ]
     },
     {
