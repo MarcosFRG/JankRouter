@@ -167,8 +167,9 @@
       "aliases": ["minimax-3"],
       "provider": "logfare",
       "targets": [
-        { "provider": "freetheai", "model": "opc/minimax-m3-free" },
         { "provider": "logfare", "model": "minimax-m3" },
+        { "provider": "freetheai", "model": "min/minimax-m3-free" },
+        { "provider": "freetheai", "model": "opc/minimax-m3-free" },
         { "provider": "ollama", "model": "minimax-m3:cloud" }
       ]
     },
