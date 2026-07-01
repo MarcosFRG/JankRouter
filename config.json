@@ -48,6 +48,10 @@
     "aqua": {
       "url": "https://api.aquadevs.com/v1",
       "api_key_env": "AQ_APIKEY"
+    },
+    "tokenreply": {
+      "url": "https://api.tokenreply.com/v1",
+      "api_key_env": "TR_APIKEY"
     }
   },
   "models": [
@@ -67,18 +71,8 @@
         { "provider": "paxsenix", "model": "mimo-v2.5" },
         { "provider": "aqua", "model": "mimo-v2.5" },
         { "provider": "freetheai", "model": "opc/mimo-v2.5-free" },
-        { "provider": "freetheai", "model": "mim/mimo-v2.5" }
-      ]
-    },
-    {
-      "name": "gemini-2.5-flash-lite",
-      "aliases": ["gemini", "gemini-flash"],
-      "targets": [
-        { "provider": "navy", "model": "gemini-2.5-flash-lite" },
-        { "provider": "paxsenix", "model": "gemini-2.5-flash-lite" },
-        { "provider": "literouter", "model": "gemini-2.5-flash-lite:free" },
-        { "provider": "freetheai", "model": "bbl/gemini-2.5-flash-lite" },
-        { "provider": "literouter", "model": "gemini-2.5-flash-lite" }
+        { "provider": "freetheai", "model": "mim/mimo-v2.5" },
+        { "provider": "tokenreply", "model": "mimo-v2.5-free" }
       ]
     },
     {
@@ -87,11 +81,11 @@
       "timeout": 55000,
       "provider": "ollama",
       "targets": [
-        { "provider": "airforce", "model": "deepseek-v3.2-free" },
         { "provider": "navy", "model": "deepseek-v3.2" },
         { "provider": "paxsenix", "model": "deepseek-v3.2" },
-        { "provider": "hapuppy", "model": "deepseek-v3.2" },
         { "provider": "literouter", "model": "deepseek-v3.2:free" },
+        { "provider": "airforce", "model": "deepseek-v3.2-free" },
+        { "provider": "hapuppy", "model": "deepseek-v3.2" },
         { "provider": "ollama", "model": "deepseek-v3.2:cloud" }
       ]
     },
@@ -102,10 +96,12 @@
       "targets": [
         { "provider": "logfare", "model": "deepseek-v4-flash" },
         { "provider": "navy", "model": "deepseek-v4-flash" },
-        { "provider": "hapuppy", "model": "deepseek-v4-flash" },
         { "provider": "literouter", "model": "deepseek-v4-flash:free" },
         { "provider": "freetheai", "model": "vova/deepseek-v4-flash" },
         { "provider": "freetheai", "model": "opc/deepseek-v4-flash-free" },
+        { "provider": "hapuppy", "model": "deepseek-v4-flash" },
+        { "provider": "tokenreply", "model": "deepseek-ai/deepseek-v4-flash" },
+        { "provider": "tokenreply", "model": "deepseek-v4-flash-free" },
         { "provider": "ollama", "model": "deepseek-v4-flash:cloud" }
       ]
     },
@@ -116,11 +112,36 @@
       "provider": "ollama",
       "targets": [
         { "provider": "navy", "model": "deepseek-v4-pro" },
-        { "provider": "hapuppy", "model": "deepseek-v4-pro" },
         { "provider": "paxsenix", "model": "deepseek-v4-pro" },
         { "provider": "freetheai", "model": "vova/deepseek-v4-pro" },
         { "provider": "freetheai", "model": "olm/deepseek-v4-pro" },
+        { "provider": "hapuppy", "model": "deepseek-v4-pro" },
+        { "provider": "tokenreply", "model": "deepseek-ai/deepseek-v4-pro" },
         { "provider": "ollama", "model": "deepseek-v4-pro:cloud" }
+      ]
+    },
+    {
+      "name": "kimi-k2.6",
+      "aliases": ["kimi"],
+      "targets": [
+        { "provider": "navy", "model": "kimi-k2.6" },
+        { "provider": "paxsenix", "model": "kimi-k2.6" },
+        { "provider": "airforce", "model": "kimi-k2.6-thinking" },
+        { "provider": "freetheai", "model": "wsf/kimi-k2.6" },
+        { "provider": "freetheai", "model": "fee/kimi-k2.6" },
+        { "provider": "hapuppy", "model": "kimi-k2.6" },
+        { "provider": "tokenreply", "model": "moonshotai/kimi-k2.6" }
+      ]
+    },
+    {
+      "name": "gemini-3-flash-preview",
+      "aliases": ["gemini-3", "gemini-3-flash"],
+      "targets": [
+        { "provider": "navy", "model": "gemini-3-flash-preview" },
+        { "provider": "paxsenix", "model": "gemini-3-flash" },
+        { "provider": "aqua", "model": "gemini-3" },
+        { "provider": "freetheai", "model": "vova/gemini-3-flash-preview" },
+        { "provider": "hapuppy", "model": "gemini-3-flash-preview" }
       ]
     },
     {
@@ -130,6 +151,7 @@
       "targets": [
         { "provider": "literouter", "model": "gemma-3-27b-it-free" },
         { "provider": "navy", "model": "gemma-3-27b-it" },
+        { "provider": "paxsenix", "model": "gemma-3-27b" },
         { "provider": "ollama", "model": "gemma3:27b-cloud" }
       ]
     },
@@ -139,7 +161,8 @@
       "targets": [
         { "provider": "navy", "model": "gemma-4-26b-a4b-it" },
         { "provider": "paxsenix", "model": "gemma-4-26b" },
-        { "provider": "literouter", "model": "gemma-4-26b-a4b:free" }
+        { "provider": "literouter", "model": "gemma-4-26b-a4b:free" },
+        { "provider": "tokenreply", "model": "google/gemma-4-26b-a4b-it" }
       ]
     },
     {
@@ -149,8 +172,9 @@
         { "provider": "navy", "model": "gemma-4-31b-it" },
         { "provider": "paxsenix", "model": "gemma-4-31b" },
         { "provider": "aqua", "model": "gemma-4" },
+        { "provider": "literouter", "model": "gemma-4-31b:free" },
         { "provider": "hapuppy", "model": "gemma-4-31b-it" },
-        { "provider": "literouter", "model": "gemma-4-31b:free" }
+        { "provider": "tokenreply", "model": "google/gemma-4-31b-it" }
       ]
     },
     {
@@ -159,6 +183,7 @@
       "provider": "ollama",
       "targets": [
         { "provider": "navy", "model": "minimax-m2.7" },
+        { "provider": "tokenreply", "model": "minimaxai/minimax-m2.7" },
         { "provider": "ollama", "model": "minimax-m2.7:cloud" }
       ]
     },
@@ -170,6 +195,7 @@
         { "provider": "logfare", "model": "minimax-m3" },
         { "provider": "freetheai", "model": "min/minimax-m3-free" },
         { "provider": "freetheai", "model": "opc/minimax-m3-free" },
+        { "provider": "tokenreply", "model": "minimaxai/minimax-m3" },
         { "provider": "ollama", "model": "minimax-m3:cloud" }
       ]
     },
@@ -177,9 +203,10 @@
       "name": "step-3.5-flash",
       "aliases": ["step-flash", "stepfun-3.5-flash"],
       "targets": [
-        { "provider": "routeway", "model": "step-3.5-flash:free" },
+        { "provider": "paxsenix", "model": "step-3.5-flash" },
         { "provider": "airforce", "model": "step-3.5-flash:free" },
-        { "provider": "paxsenix", "model": "step-3.5-flash" }
+        { "provider": "routeway", "model": "step-3.5-flash:free" },
+        { "provider": "tokenreply", "model": "stepfun-ai/step-3.5-flash" }
       ]
     },
     {
@@ -187,7 +214,8 @@
       "aliases": ["stepfun-3.7-flash"],
       "targets": [
         { "provider": "freetheai", "model": "kai/stepfun/step-3.7-flash:free" },
-        { "provider": "aqua", "model": "step-3.7" }
+        { "provider": "aqua", "model": "step-3.7" },
+        { "provider": "tokenreply", "model": "stepfun-ai/step-3.7-flash" }
       ]
     },
     {
@@ -196,7 +224,9 @@
       "targets": [
         { "provider": "aqua", "model": "grok" },
         { "provider": "navy", "model": "grok-4.20-non-reasoning" },
-        { "provider": "paxsenix", "model": "grok-4.20-fast" }
+        { "provider": "paxsenix", "model": "grok-4.20-fast" },
+        { "provider": "tokenreply", "model": "grok-4.20-0309-non-reasoning" },
+        { "provider": "tokenreply", "model": "grok-4.20-fast" }
       ]
     },
     {
@@ -204,7 +234,8 @@
       "aliases": ["grok-reasoning"],
       "targets": [
         { "provider": "aqua", "model": "grok-4.2-thinking" },
-        { "provider": "navy", "model": "grok-4.20-reasoning" }
+        { "provider": "navy", "model": "grok-4.20-reasoning" },
+        { "provider": "tokenreply", "model": "grok-4.20-0309-reasoning" }
       ]
     },
     {
@@ -213,18 +244,22 @@
       "targets": [
         { "provider": "aqua", "model": "grok-4.3" },
         { "provider": "navy", "model": "grok-4.3" },
-        { "provider": "paxsenix", "model": "grok-4.3" }
+        { "provider": "paxsenix", "model": "grok-4.3" },
+        { "provider": "tokenreply", "model": "grok-4.3" },
+        { "provider": "tokenreply", "model": "grok-4.3-high" },
+        { "provider": "tokenreply", "model": "grok-4.3-medium" },
+        { "provider": "tokenreply", "model": "grok-4.3-low" }
       ]
     },
     {
       "name": "llama-4-scout",
       "aliases": ["llama-4", "llama-scout"],
       "targets": [
-        { "provider": "hapuppy", "model": "llama-4-scout-17b-16e-instruct" },
         { "provider": "navy", "model": "llama-4-scout" },
         { "provider": "paxsenix", "model": "llama-4-scout" },
         { "provider": "literouter", "model": "llama-4-scout:free" },
-        { "provider": "naga", "model": "llama-4-scout-17b-16e-instruct:free" }
+        { "provider": "naga", "model": "llama-4-scout-17b-16e-instruct:free" },
+        { "provider": "hapuppy", "model": "llama-4-scout-17b-16e-instruct" }
       ]
     },
     {
@@ -232,29 +267,39 @@
       "aliases": ["llama-maverick"],
       "targets": [
         { "provider": "aqua", "model": "llama-4" },
-        { "provider": "hapuppy", "model": "llama-4-maverick-17b-128e-instruct" },
         { "provider": "navy", "model": "llama-4-maverick" },
-        { "provider": "paxsenix", "model": "llama-4-maverick" }
+        { "provider": "paxsenix", "model": "llama-4-maverick" },
+        { "provider": "hapuppy", "model": "llama-4-maverick-17b-128e-instruct" }
       ]
     },
     {
       "name": "gpt-oss-20b",
       "aliases": ["gpt-oss"],
       "targets": [
-        { "provider": "airforce", "model": "gpt-oss-20b" },
         { "provider": "navy", "model": "gpt-oss-20b" },
         { "provider": "paxsenix", "model": "gpt-oss-20b" },
-        { "provider": "literouter", "model": "gpt-oss-20b:free" }
+        { "provider": "literouter", "model": "gpt-oss-20b:free" },
+        { "provider": "airforce", "model": "gpt-oss-20b" }
       ]
     },
     {
       "name": "gpt-5-nano",
-      "aliases": ["gpt"],
+      "aliases": ["gpt-5", "gpt-nano"],
       "targets": [
-        { "provider": "hapuppy", "model": "gpt-5-nano" },
         { "provider": "navy", "model": "gpt-5-nano" },
         { "provider": "paxsenix", "model": "gpt-5-nano" },
-        { "provider": "literouter", "model": "gpt-5-nano:free" }
+        { "provider": "literouter", "model": "gpt-5-nano:free" },
+        { "provider": "hapuppy", "model": "gpt-5-nano" }
+      ]
+    },
+    {
+      "name": "gpt-5.4-nano",
+      "aliases": ["gpt-5.4"],
+      "targets": [
+        { "provider": "navy", "model": "gpt-5.4-nano" },
+        { "provider": "paxsenix", "model": "gpt-5.4-nano" },
+        { "provider": "aqua", "model": "gpt-5.4-nano" },
+        { "provider": "hapuppy", "model": "gpt-5.4-nano" }
       ]
     },
     {
