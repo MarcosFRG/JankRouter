@@ -114,7 +114,7 @@ function buildPortkeyConfig(modelConfig) {
 
 async function proxyToPortkey(modelConfig, body, res, options = {}) {
   const portkeyConfig = buildPortkeyConfig(modelConfig);
-  const streamTimeout = modelConfig.stream_timeout || 15000;
+  const streamTimeout = modelConfig.stream_timeout || 60000;
 
   const headers = {
     'Content-Type': 'application/json',
