@@ -1,16 +1,55 @@
 require('dotenv').config();
+const dotenv = require('dotenv');
 const express = require('express');
 const fs = require('fs');
 const app = express();
 app.use(express.json({ limit: '10mb' }));
 
-let config;
-try {
-  const raw = fs.readFileSync('./config.json');
-  config = JSON.parse(raw);
-} catch (err) {
-  console.error('Error loading config.json:', err.message);
-  process.exit(1);
+let envCache = {
+  timestamp: 0
+};
+
+function loadEnv() {
+  const now = Date.now();
+  if (now - envCache.timestamp < 120000) return;
+  
+  try {
+    dotenv.config({ override: true, path: './.env' });
+    envCache.timestamp = now;
+  } catch (err) {
+    console.error('Error loading .env:', err.message);
+    envCache.timestamp = now;
+  }
+}
+
+app.use((req, res, next) => {
+  loadEnv();
+  next();
+});
+
+let configCache = {
+  data: null,
+  timestamp: 0
+};
+
+function getConfig() {
+  const now = Date.now();
+  if (configCache.data !== null && (now - configCache.timestamp < 120000)) return configCache.data;
+  
+  try {
+    if (!fs.existsSync('./config.json')) {
+      console.error('config.json not found.');
+      process.exit(1);
+    }
+    const raw = fs.readFileSync('./config.json');
+    const parsed = JSON.parse(raw);
+    configCache.data = parsed;
+    configCache.timestamp = now;
+    return parsed;
+  } catch (err) {
+    console.error('Error loading config.json:', err.message);
+    process.exit(1);
+  }
 }
 
 let apiKeysCache = {
@@ -54,9 +93,7 @@ function checkProAccess(req, res, modelConfig) {
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
     providedKey = authHeader.substring(7);
-  } else if (typeof proParam == 'string' && proParam.length > 5 && proParam !== 'true' && proParam !== '1') {
-    providedKey = proParam;
-  }
+  } else if (typeof proParam == 'string' && proParam.length > 5 && proParam !== 'true' && proParam !== '1') providedKey = proParam;
 
   if (!providedKey) {
     res.status(401).json({ error: 'This model requires a Pro API Key created by Marcos F R Games. Please provide it in the Authorization header (Bearer <token>) or the "pro" parameter.' });
@@ -78,42 +115,36 @@ function checkProAccess(req, res, modelConfig) {
   return true;
 }
 
-const providers = config.providers || {};
-const models = config.models || [];
-const defaultTimeout = config.default_timeout || 42000;
-const portkeyBaseUrl = process.env.PORTKEY_BASE_URL;
+function buildPortkeyConfig(modelConfig, config) {
+  const providers = config.providers || {};
+  const defaultTimeout = config.default_timeout || 42000;
 
-const modelMap = new Map();
-for (const m of models) {
-  modelMap.set(m.name, m);
-  if (Array.isArray(m.aliases)) {
-    for (const alias of m.aliases) modelMap.set(alias, m);
-  }
-}
-
-function buildPortkeyConfig(modelConfig) {
   const targets = (modelConfig.targets || []).map(target => {
     const provider = providers[target.provider];
     if (!provider) throw new Error(`Unknown provider: ${target.provider}`);
     const apiKey = process.env[provider.api_key_env];
     if (!apiKey) throw new Error(`Missing API key for provider ${target.provider} (env: ${provider.api_key_env})`);
     return {
-      provider: "openai",
+      provider: target.api_format || "openai",
       custom_host: provider.url,
       api_key: apiKey,
       override_params: { model: target.model }
     };
   });
 
-  return {
+  const portkeyConfig = {
     strategy: { mode: "fallback" },
     request_timeout: modelConfig.timeout || defaultTimeout,
     targets
   };
+
+  if (modelConfig.icf === false) portkeyConfig.ignore_content_filter = false;
+
+  return portkeyConfig;
 }
 
-async function proxyToPortkey(modelConfig, body, res, options = {}) {
-  const portkeyConfig = buildPortkeyConfig(modelConfig);
+async function proxyToPortkey(modelConfig, body, res, config, options = {}) {
+  const portkeyConfig = buildPortkeyConfig(modelConfig, config);
   const streamTimeout = modelConfig.stream_timeout || 60000;
 
   const headers = {
@@ -125,7 +156,7 @@ async function proxyToPortkey(modelConfig, body, res, options = {}) {
   const timer = setTimeout(() => controller.abort(), 90000);
 
   try {
-    const upstream = await fetch(`${portkeyBaseUrl}/chat/completions`, {
+    const upstream = await fetch(`${process.env.PORTKEY_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers,
       body: JSON.stringify(body),
@@ -140,7 +171,7 @@ async function proxyToPortkey(modelConfig, body, res, options = {}) {
 
     if (!body.stream) {
       const data = await upstream.json();
-      if (options.responseType === 'text') return res.type('text/plain').send(data.choices?.[0]?.message?.content || '');
+      if (options.responseType == 'text') return res.type('text/plain').send(data.choices?.[0]?.message?.content || '');
       return res.json(data);
     }
 
@@ -178,6 +209,17 @@ async function proxyToPortkey(modelConfig, body, res, options = {}) {
 }
 
 app.post('/v1/chat/completions', async (req, res) => {
+  const config = getConfig();
+  const models = config.models || [];
+  
+  const modelMap = new Map();
+  for (const m of models) {
+    modelMap.set(m.name, m);
+    if (Array.isArray(m.aliases)) {
+      for (const alias of m.aliases) modelMap.set(alias, m);
+    }
+  }
+
   const body = req.body;
   if (!body.model) return res.status(400).json({ error: 'Missing model parameter' });
 
@@ -187,18 +229,30 @@ app.post('/v1/chat/completions', async (req, res) => {
   if (!checkProAccess(req, res, modelConfig)) return;
 
   try {
-    await proxyToPortkey(modelConfig, body, res);
+    await proxyToPortkey(modelConfig, body, res, config);
   } catch (err) {
     res.status(502).json({ error: 'Portkey request failed', details: err.message });
   }
 });
 
 app.get('/generate/:text', async (req, res) => {
+  const config = getConfig();
+  const models = config.models || [];
+  
+  const modelMap = new Map();
+  for (const m of models) {
+    modelMap.set(m.name, m);
+    if (Array.isArray(m.aliases)) {
+      for (const alias of m.aliases) modelMap.set(alias, m);
+    }
+  }
+
   const text = req.params.text;
   const {
     model,
     temperature,
     top_p,
+    top_k,
     max_tokens,
     max_completion_tokens,
     presence_penalty,
@@ -231,6 +285,7 @@ app.get('/generate/:text', async (req, res) => {
     messages,
     ...(temperature !== undefined && { temperature: parseFloat(temperature) }),
     ...(top_p !== undefined && { top_p: parseFloat(top_p) }),
+    ...(top_k !== undefined && { top_k: parseInt(top_k) }),
     ...(max_tokens !== undefined && { max_tokens: parseInt(max_tokens) }),
     ...(max_completion_tokens !== undefined && { max_completion_tokens: parseInt(max_completion_tokens) }),
     ...(presence_penalty !== undefined && { presence_penalty: parseFloat(presence_penalty) }),
@@ -246,13 +301,16 @@ app.get('/generate/:text', async (req, res) => {
   };
 
   try {
-    await proxyToPortkey(modelConfig, body, res, { responseType: 'text' });
+    await proxyToPortkey(modelConfig, body, res, config, { responseType: 'text' });
   } catch (err) {
     res.status(502).json({ error: 'Portkey request failed', details: err.message });
   }
 });
 
 app.get('/', (req, res) => {
+  const config = getConfig();
+  const models = config.models || [];
+  
   const host = `${req.protocol}://${req.get('host')}`;
   const modelList = models.map(m => {
     const aliasesStr = m.aliases ? ` (alias: ${m.aliases.map(a => `<code>${a}</code>`).join(', ')})` : '';
@@ -266,6 +324,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/v1/models', (req, res) => {
+  const config = getConfig();
+  const models = config.models || [];
+  
   const data = models.map(m => ({
     id: m.name,
     object: 'model',
