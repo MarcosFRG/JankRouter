@@ -13,6 +13,71 @@ try {
   process.exit(1);
 }
 
+let apiKeysCache = {
+  data: null,
+  timestamp: 0
+};
+
+function getApiKeys() {
+  const now = Date.now();
+  if (apiKeysCache.data !== null && (now - apiKeysCache.timestamp < 60000)) return apiKeysCache.data;
+  
+  try {
+    if (!fs.existsSync('./apikeys.json')) {
+      console.warn('apikeys.json not found. Pro models will be inaccessible.');
+      apiKeysCache.data = [];
+      apiKeysCache.timestamp = now;
+      return [];
+    }
+    const raw = fs.readFileSync('./apikeys.json');
+    const parsed = JSON.parse(raw);
+    apiKeysCache.data = Array.isArray(parsed) ? parsed : (parsed.keys || []);
+    apiKeysCache.timestamp = now;
+    return apiKeysCache.data;
+  } catch (err) {
+    console.error('Error loading apikeys.json:', err.message);
+    apiKeysCache.data = [];
+    apiKeysCache.timestamp = now;
+    return [];
+  }
+}
+
+function checkProAccess(req, res, modelConfig) {
+  const isProModel = modelConfig.pro;
+  const proParam = req.query.pro !== undefined ? req.query.pro : (req.body ? req.body.pro : undefined);
+  
+  const requiresKey = isProModel || proParam == true;
+  
+  if (!requiresKey) return true;
+
+  let providedKey = null;
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    providedKey = authHeader.substring(7);
+  } else if (typeof proParam == 'string' && proParam.length > 5 && proParam !== 'true' && proParam !== '1') {
+    providedKey = proParam;
+  }
+
+  if (!providedKey) {
+    res.status(401).json({ error: 'This model requires a Pro API Key created by Marcos F R Games. Please provide it in the Authorization header (Bearer <token>) or the "pro" parameter.' });
+    return false;
+  }
+
+  const validKeys = getApiKeys();
+  const isValid = validKeys.some(k => {
+    if (typeof k == 'string') return k == providedKey;
+    if (typeof k == 'object' && k !== null) return k.key == providedKey;
+    return false;
+  });
+
+  if (!isValid) {
+    res.status(403).json({ error: 'Invalid Pro API Key.' });
+    return false;
+  }
+
+  return true;
+}
+
 const providers = config.providers || {};
 const models = config.models || [];
 const defaultTimeout = config.default_timeout || 42000;
@@ -49,7 +114,7 @@ function buildPortkeyConfig(modelConfig) {
 
 async function proxyToPortkey(modelConfig, body, res, options = {}) {
   const portkeyConfig = buildPortkeyConfig(modelConfig);
-  const streamTimeout = modelConfig.stream_timeout || 30000;
+  const streamTimeout = modelConfig.stream_timeout || 15000;
 
   const headers = {
     'Content-Type': 'application/json',
@@ -119,6 +184,8 @@ app.post('/v1/chat/completions', async (req, res) => {
   const modelConfig = modelMap.get(body.model);
   if (!modelConfig) return res.status(404).json({ error: `Model not found: ${body.model}` });
 
+  if (!checkProAccess(req, res, modelConfig)) return;
+
   try {
     await proxyToPortkey(modelConfig, body, res);
   } catch (err) {
@@ -145,12 +212,15 @@ app.get('/generate/:text', async (req, res) => {
     top_logprobs,
     user,
     n,
+    pro
   } = req.query;
 
   if (!model) return res.status(400).json({ error: 'Missing model parameter' });
 
   const modelConfig = modelMap.get(model);
   if (!modelConfig) return res.status(404).json({ error: `Model not found: ${model}` });
+
+  if (!checkProAccess(req, res, modelConfig)) return;
 
   const messages = [];
   if (system) messages.push({ role: 'system', content: system });
@@ -186,12 +256,13 @@ app.get('/', (req, res) => {
   const host = `${req.protocol}://${req.get('host')}`;
   const modelList = models.map(m => {
     const aliasesStr = m.aliases ? ` (alias: ${m.aliases.map(a => `<code>${a}</code>`).join(', ')})` : '';
-    return `<li><code>${m.name}</code>${aliasesStr}</li>`;
+    const proBadge = m.pro ? ` <span style=color:#f0883e;font-weight:bold>[PRO]</span>` : '';
+    return `<li><code>${m.name}</code>${proBadge}${aliasesStr}</li>`;
   }).join('\n');
 
-  res.send(`<!doctypehtml><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>JankRouter — Free & Unstable AI Gateway</title><style>*,:after,:before{box-sizing:border-box}body{background:#0d1117;color:#c9d1d9;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;max-width:880px;margin:40px auto;padding:0 24px;line-height:1.6}h1{font-size:2.4rem;font-weight:700;background:linear-gradient(135deg,#f0883e,#f0a860);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}.tagline{color:#8b949e;font-size:1.1rem;margin-top:0 0 32px}h2{font-size:1.4rem;font-weight:600;color:#f0a860;margin-top:36px;border-bottom:1px solid #21262d;padding-bottom:6px}code{background:#161b22;color:#f0883e;padding:2px 8px;border-radius:6px;font-size:.9rem}pre{background:#161b22;padding:16px;border-radius:8px;overflow-x:auto;font-size:.85rem;line-height:1.5;border:1px solid #30363d}ul{list-style-type:none;padding-left:0;display:flex;flex-wrap:wrap;gap:8px}li{background:#161b22;border:1px solid #30363d;padding:6px 14px;border-radius:20px;font-size:.9rem;margin:0}a{color:#f0883e;text-decoration:none}a:hover{text-decoration:underline}.footer{margin-top:48px;font-size:.8rem;color:#484f58;text-align:center}</style></head><body><h1>⚡ JankRouter</h1><p class=tagline>Free & occasionally unstable AI model gateway — you get what you pay for.</p><h2>📡 POST /v1/chat/completions</h2><pre>curl ${host}/v1/chat/completions \\
+  res.send(`<!doctypehtml><html lang=en><head><meta charset=UTF-8><meta name=viewport content=width=device-width,initial-scale=1><title>JankRouter — Free & Unstable AI Gateway</title><style>*,:after,:before{box-sizing:border-box}body{background:#0d1117;color:#c9d1d9;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;max-width:880px;margin:40px auto;padding:0 24px;line-height:1.6}h1{font-size:2.4rem;font-weight:700;background:linear-gradient(135deg,#f0883e,#f0a860);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}.tagline{color:#8b949e;font-size:1.1rem;margin-top:0 0 32px}h2{font-size:1.4rem;font-weight:600;color:#f0a860;margin-top:36px;border-bottom:1px solid #21262d;padding-bottom:6px}code{background:#161b22;color:#f0883e;padding:2px 8px;border-radius:6px;font-size:.9rem}pre{background:#161b22;padding:16px;border-radius:8px;overflow-x:auto;font-size:.85rem;line-height:1.5;border:1px solid #30363d}ul{list-style-type:none;padding-left:0;display:flex;flex-wrap:wrap;gap:8px}li{background:#161b22;border:1px solid #30363d;padding:6px 14px;border-radius:20px;font-size:.9rem;margin:0}a{color:#f0883e;text-decoration:none}a:hover{text-decoration:underline}.footer{margin-top:48px;font-size:.8rem;color:#484f58;text-align:center}</style></head><body><h1>⚡ JankRouter</h1><p class=tagline>Free & occasionally unstable AI model gateway — you get what you pay for.</p><h2>📡 POST /v1/chat/completions</h2><pre>curl ${host}/v1/chat/completions \\
   -H "Content-Type: application/json" \\
-  -d '{"model":"deepseek-v4-flash","messages":[{"role":"user","content":"Hi"}]}'</pre><h2>⚡ GET /generate/:text</h2><pre>${host}/generate/Hello?model=deepseek-v4-flash</pre><h2>🧠 Models</h2><ul>${modelList}</ul><div class=footer>JankRouter — Provided as-is. May occasionally burst into flames.</div></body></html>`);
+  -d '{"model":"deepseek-v4-flash","messages":[{"role":"user","content":"Hi"}]}'</pre><h2>🔑 Pro Models</h2><p>Some models require a Pro API Key created by Marcos F R Games. You can pass it in the <code>Authorization: Bearer &lt;token&gt;</code> header or directly in the <code>pro</code> parameter.</p><h2>⚡ GET /generate/:text</h2><pre>${host}/generate/Hello?model=deepseek-v4-flash</pre><h2>🧠 Models</h2><ul>${modelList}</ul><div class=footer>JankRouter — Provided as-is. May occasionally burst into flames.</div>`);
 });
 
 app.get('/v1/models', (req, res) => {

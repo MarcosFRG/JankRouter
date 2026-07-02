@@ -52,6 +52,30 @@
     "tokenreply": {
       "url": "https://api.tokenreply.com/v1",
       "api_key_env": "TR_APIKEY"
+    },
+    "cerebras": {
+      "url": "https://api.cerebras.ai/v1",
+      "api_key_env": "CB_APIKEY"
+    },
+    "zenmux": {
+      "url": "https://zenmux.ai/api/v1",
+      "api_key_env": "ZM_APIKEY"
+    },
+    "hubmix": {
+      "url": "https://aihubmix.com/v1",
+      "api_key_env": "AU_APIKEY"
+    },
+    "ovh": {
+      "url": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+      "api_key_env": "OV_APIKEY"
+    },
+    "requesty": {
+      "url": "https://router.requesty.ai/v1",
+      "api_key_env": "RQ_APIKEY"
+    },
+    "sixfinger": {
+      "url": "https://api.sixfinger.live/v1",
+      "api_key_env": "SF_APIKEY"
     }
   },
   "models": [
@@ -60,6 +84,7 @@
       "aliases": ["qwen-guard", "qwen-safety"],
       "provider": "pollinations",
       "targets": [
+        { "provider": "ovh", "model": "Qwen3Guard-Gen-8B" },
         { "provider": "pollinations", "model": "qwen-safety" }
       ]
     },
@@ -67,12 +92,14 @@
       "name": "mimo-v2.5",
       "aliases": ["mimo"],
       "targets": [
-        { "provider": "navy", "model": "mimo-v2.5" },
-        { "provider": "paxsenix", "model": "mimo-v2.5" },
         { "provider": "aqua", "model": "mimo-v2.5" },
         { "provider": "freetheai", "model": "opc/mimo-v2.5-free" },
         { "provider": "freetheai", "model": "mim/mimo-v2.5" },
-        { "provider": "tokenreply", "model": "mimo-v2.5-free" }
+        { "provider": "hubmix", "model": "xiaomi-mimo-v2.5-free" },
+        { "provider": "paxsenix", "model": "mimo-v2.5" },
+        { "provider": "navy", "model": "mimo-v2.5" },
+        { "provider": "tokenreply", "model": "mimo-v2.5-free" },
+        { "provider": "sixfinger", "model": "mimo-v2.5-free" }
       ]
     },
     {
@@ -80,12 +107,14 @@
       "aliases": ["deepseek-legacy"],
       "timeout": 55000,
       "provider": "ollama",
+      "pro": true,
       "targets": [
-        { "provider": "navy", "model": "deepseek-v3.2" },
-        { "provider": "paxsenix", "model": "deepseek-v3.2" },
-        { "provider": "literouter", "model": "deepseek-v3.2:free" },
         { "provider": "airforce", "model": "deepseek-v3.2-free" },
+        { "provider": "literouter", "model": "deepseek-v3.2:free" },
         { "provider": "hapuppy", "model": "deepseek-v3.2" },
+        { "provider": "paxsenix", "model": "deepseek-v3.2" },
+        { "provider": "navy", "model": "deepseek-v3.2" },
+        { "provider": "sixfinger", "model": "deepseek-v3.2" },
         { "provider": "ollama", "model": "deepseek-v3.2:cloud" }
       ]
     },
@@ -95,13 +124,15 @@
       "provider": "logfare",
       "targets": [
         { "provider": "logfare", "model": "deepseek-v4-flash" },
-        { "provider": "navy", "model": "deepseek-v4-flash" },
         { "provider": "literouter", "model": "deepseek-v4-flash:free" },
         { "provider": "freetheai", "model": "vova/deepseek-v4-flash" },
         { "provider": "freetheai", "model": "opc/deepseek-v4-flash-free" },
         { "provider": "hapuppy", "model": "deepseek-v4-flash" },
+        { "provider": "navy", "model": "deepseek-v4-flash" },
         { "provider": "tokenreply", "model": "deepseek-ai/deepseek-v4-flash" },
         { "provider": "tokenreply", "model": "deepseek-v4-flash-free" },
+        { "provider": "sixfinger", "model": "deepseek-v4-flash-free" },
+        { "provider": "sixfinger", "model": "deepseek-v4-flash" },
         { "provider": "ollama", "model": "deepseek-v4-flash:cloud" }
       ]
     },
@@ -110,12 +141,13 @@
       "aliases": ["deepseek-pro"],
       "timeout": 55000,
       "provider": "ollama",
+      "pro": true,
       "targets": [
-        { "provider": "navy", "model": "deepseek-v4-pro" },
-        { "provider": "paxsenix", "model": "deepseek-v4-pro" },
         { "provider": "freetheai", "model": "vova/deepseek-v4-pro" },
         { "provider": "freetheai", "model": "olm/deepseek-v4-pro" },
         { "provider": "hapuppy", "model": "deepseek-v4-pro" },
+        { "provider": "paxsenix", "model": "deepseek-v4-pro" },
+        { "provider": "navy", "model": "deepseek-v4-pro" },
         { "provider": "tokenreply", "model": "deepseek-ai/deepseek-v4-pro" },
         { "provider": "ollama", "model": "deepseek-v4-pro:cloud" }
       ]
@@ -123,57 +155,76 @@
     {
       "name": "kimi-k2.6",
       "aliases": ["kimi"],
+      "pro": true,
       "targets": [
-        { "provider": "navy", "model": "kimi-k2.6" },
-        { "provider": "paxsenix", "model": "kimi-k2.6" },
         { "provider": "airforce", "model": "kimi-k2.6-thinking" },
         { "provider": "freetheai", "model": "wsf/kimi-k2.6" },
         { "provider": "freetheai", "model": "fee/kimi-k2.6" },
         { "provider": "hapuppy", "model": "kimi-k2.6" },
+        { "provider": "paxsenix", "model": "kimi-k2.6" },
+        { "provider": "navy", "model": "kimi-k2.6" },
         { "provider": "tokenreply", "model": "moonshotai/kimi-k2.6" }
+      ]
+    },
+    {
+      "name": "gemini-2.5-flash-lite",
+      "aliases": ["gemini", "gemini-2.5", "gemini-flash"],
+      "targets": [
+        { "provider": "aqua", "model": "gemini-2.5" },
+        { "provider": "literouter", "model": "gemini-2.5-flash-lite:free" },
+        { "provider": "freetheai", "model": "bbl/gemini-2.5-flash-lite" },
+        { "provider": "paxsenix", "model": "gemini-2.5-flash-lite" },
+        { "provider": "navy", "model": "gemini-2.5-flash-lite" }
       ]
     },
     {
       "name": "gemini-3-flash-preview",
       "aliases": ["gemini-3", "gemini-3-flash"],
+      "pro": true,
       "targets": [
-        { "provider": "navy", "model": "gemini-3-flash-preview" },
-        { "provider": "paxsenix", "model": "gemini-3-flash" },
         { "provider": "aqua", "model": "gemini-3" },
         { "provider": "freetheai", "model": "vova/gemini-3-flash-preview" },
-        { "provider": "hapuppy", "model": "gemini-3-flash-preview" }
+        { "provider": "hapuppy", "model": "gemini-3-flash-preview" },
+        { "provider": "hubmix", "model": "gemini-3-flash-preview-free" },
+        { "provider": "paxsenix", "model": "gemini-3-flash" },
+        { "provider": "navy", "model": "gemini-3-flash-preview" }
       ]
     },
     {
       "name": "gemma-3-27b",
       "aliases": ["gemma-3"],
       "provider": "ollama",
+      "pro": true,
       "targets": [
         { "provider": "literouter", "model": "gemma-3-27b-it-free" },
-        { "provider": "navy", "model": "gemma-3-27b-it" },
         { "provider": "paxsenix", "model": "gemma-3-27b" },
+        { "provider": "navy", "model": "gemma-3-27b-it" },
         { "provider": "ollama", "model": "gemma3:27b-cloud" }
       ]
     },
     {
       "name": "gemma-4-26b-a4b",
       "aliases": ["gemma-4-26b", "gemma-moe"],
+      "pro": true,
       "targets": [
-        { "provider": "navy", "model": "gemma-4-26b-a4b-it" },
-        { "provider": "paxsenix", "model": "gemma-4-26b" },
         { "provider": "literouter", "model": "gemma-4-26b-a4b:free" },
+        { "provider": "paxsenix", "model": "gemma-4-26b" },
+        { "provider": "navy", "model": "gemma-4-26b-a4b-it" },
         { "provider": "tokenreply", "model": "google/gemma-4-26b-a4b-it" }
       ]
     },
     {
       "name": "gemma-4-31b",
       "aliases": ["gemma", "gemma-4"],
+      "pro": true,
       "targets": [
-        { "provider": "navy", "model": "gemma-4-31b-it" },
-        { "provider": "paxsenix", "model": "gemma-4-31b" },
         { "provider": "aqua", "model": "gemma-4" },
         { "provider": "literouter", "model": "gemma-4-31b:free" },
         { "provider": "hapuppy", "model": "gemma-4-31b-it" },
+        { "provider": "cerebras", "model": "gemma-4-31b" },
+        { "provider": "requesty", "model": "gemma-4-31b-it" },
+        { "provider": "paxsenix", "model": "gemma-4-31b" },
+        { "provider": "navy", "model": "gemma-4-31b-it" },
         { "provider": "tokenreply", "model": "google/gemma-4-31b-it" }
       ]
     },
@@ -182,6 +233,7 @@
       "aliases": ["minimax", "minimax-2.7"],
       "provider": "ollama",
       "targets": [
+        { "provider": "freetheai", "model": "vova/minimax-m2.7" },
         { "provider": "navy", "model": "minimax-m2.7" },
         { "provider": "tokenreply", "model": "minimaxai/minimax-m2.7" },
         { "provider": "ollama", "model": "minimax-m2.7:cloud" }
@@ -195,6 +247,7 @@
         { "provider": "logfare", "model": "minimax-m3" },
         { "provider": "freetheai", "model": "min/minimax-m3-free" },
         { "provider": "freetheai", "model": "opc/minimax-m3-free" },
+        { "provider": "freetheai", "model": "vova/minimax-m3" },
         { "provider": "tokenreply", "model": "minimaxai/minimax-m3" },
         { "provider": "ollama", "model": "minimax-m3:cloud" }
       ]
@@ -203,8 +256,8 @@
       "name": "step-3.5-flash",
       "aliases": ["step-flash", "stepfun-3.5-flash"],
       "targets": [
-        { "provider": "paxsenix", "model": "step-3.5-flash" },
         { "provider": "airforce", "model": "step-3.5-flash:free" },
+        { "provider": "paxsenix", "model": "step-3.5-flash" },
         { "provider": "routeway", "model": "step-3.5-flash:free" },
         { "provider": "tokenreply", "model": "stepfun-ai/step-3.5-flash" }
       ]
@@ -212,19 +265,23 @@
     {
       "name": "step-3.7-flash",
       "aliases": ["stepfun-3.7-flash"],
+      "pro": true,
       "targets": [
         { "provider": "freetheai", "model": "kai/stepfun/step-3.7-flash:free" },
         { "provider": "aqua", "model": "step-3.7" },
+        { "provider": "zenmux", "model": "step-3.7-flash-free" },
+        { "provider": "hubmix", "model": "step-3.7-flash-free" },
         { "provider": "tokenreply", "model": "stepfun-ai/step-3.7-flash" }
       ]
     },
     {
       "name": "grok-4.20-non-reasoning",
       "aliases": ["grok", "grok-4.20", "grok-fast"],
+      "pro": true,
       "targets": [
         { "provider": "aqua", "model": "grok" },
-        { "provider": "navy", "model": "grok-4.20-non-reasoning" },
         { "provider": "paxsenix", "model": "grok-4.20-fast" },
+        { "provider": "navy", "model": "grok-4.20-non-reasoning" },
         { "provider": "tokenreply", "model": "grok-4.20-0309-non-reasoning" },
         { "provider": "tokenreply", "model": "grok-4.20-fast" }
       ]
@@ -232,6 +289,7 @@
     {
       "name": "grok-4.20-reasoning",
       "aliases": ["grok-reasoning"],
+      "pro": true,
       "targets": [
         { "provider": "aqua", "model": "grok-4.2-thinking" },
         { "provider": "navy", "model": "grok-4.20-reasoning" },
@@ -241,10 +299,11 @@
     {
       "name": "grok-4.3",
       "aliases": ["grok-latest"],
+      "pro": true,
       "targets": [
         { "provider": "aqua", "model": "grok-4.3" },
-        { "provider": "navy", "model": "grok-4.3" },
         { "provider": "paxsenix", "model": "grok-4.3" },
+        { "provider": "navy", "model": "grok-4.3" },
         { "provider": "tokenreply", "model": "grok-4.3" },
         { "provider": "tokenreply", "model": "grok-4.3-high" },
         { "provider": "tokenreply", "model": "grok-4.3-medium" },
@@ -252,14 +311,23 @@
       ]
     },
     {
+      "name": "llama-3.3-70b-instruct",
+      "aliases": ["llama", "llama-3"],
+      "targets": [
+        { "provider": "ovh", "model": "Meta-Llama-3_3-70B-Instruct" },
+        { "provider": "naga", "model": "llama-3.3-70b-instruct:free" },
+        { "provider": "navy", "model": "llama-3.3-70b-instruct" }
+      ]
+    },
+    {
       "name": "llama-4-scout",
       "aliases": ["llama-4", "llama-scout"],
       "targets": [
-        { "provider": "navy", "model": "llama-4-scout" },
-        { "provider": "paxsenix", "model": "llama-4-scout" },
         { "provider": "literouter", "model": "llama-4-scout:free" },
+        { "provider": "hapuppy", "model": "llama-4-scout-17b-16e-instruct" },
         { "provider": "naga", "model": "llama-4-scout-17b-16e-instruct:free" },
-        { "provider": "hapuppy", "model": "llama-4-scout-17b-16e-instruct" }
+        { "provider": "paxsenix", "model": "llama-4-scout" },
+        { "provider": "navy", "model": "llama-4-scout" }
       ]
     },
     {
@@ -267,47 +335,49 @@
       "aliases": ["llama-maverick"],
       "targets": [
         { "provider": "aqua", "model": "llama-4" },
-        { "provider": "navy", "model": "llama-4-maverick" },
+        { "provider": "hapuppy", "model": "llama-4-maverick-17b-128e-instruct" },
         { "provider": "paxsenix", "model": "llama-4-maverick" },
-        { "provider": "hapuppy", "model": "llama-4-maverick-17b-128e-instruct" }
+        { "provider": "navy", "model": "llama-4-maverick" }
       ]
     },
     {
       "name": "gpt-oss-20b",
       "aliases": ["gpt-oss"],
       "targets": [
-        { "provider": "navy", "model": "gpt-oss-20b" },
-        { "provider": "paxsenix", "model": "gpt-oss-20b" },
+        { "provider": "airforce", "model": "gpt-oss-20b" },
+        { "provider": "ovh", "model": "gpt-oss-20b" },
         { "provider": "literouter", "model": "gpt-oss-20b:free" },
-        { "provider": "airforce", "model": "gpt-oss-20b" }
+        { "provider": "paxsenix", "model": "gpt-oss-20b" },
+        { "provider": "navy", "model": "gpt-oss-20b" }
       ]
     },
     {
       "name": "gpt-5-nano",
       "aliases": ["gpt-5", "gpt-nano"],
       "targets": [
-        { "provider": "navy", "model": "gpt-5-nano" },
-        { "provider": "paxsenix", "model": "gpt-5-nano" },
         { "provider": "literouter", "model": "gpt-5-nano:free" },
-        { "provider": "hapuppy", "model": "gpt-5-nano" }
+        { "provider": "hapuppy", "model": "gpt-5-nano" },
+        { "provider": "paxsenix", "model": "gpt-5-nano" },
+        { "provider": "navy", "model": "gpt-5-nano" }
       ]
     },
     {
       "name": "gpt-5.4-nano",
       "aliases": ["gpt-5.4"],
       "targets": [
-        { "provider": "navy", "model": "gpt-5.4-nano" },
-        { "provider": "paxsenix", "model": "gpt-5.4-nano" },
         { "provider": "aqua", "model": "gpt-5.4-nano" },
-        { "provider": "hapuppy", "model": "gpt-5.4-nano" }
+        { "provider": "hapuppy", "model": "gpt-5.4-nano" },
+        { "provider": "paxsenix", "model": "gpt-5.4-nano" },
+        { "provider": "navy", "model": "gpt-5.4-nano" }
       ]
     },
     {
       "name": "qwen3-coder-30b-a3b",
       "aliases": ["qwen3-coder-30b-a3b-instruct", "qwen3-coder", "qwen-coder"],
       "targets": [
-        { "provider": "paxsenix", "model": "qwen-3-coder-30b-a3b" },
-        { "provider": "aqua", "model": "qwen" }
+        { "provider": "aqua", "model": "qwen" },
+        { "provider": "ovh", "model": "Qwen3-Coder-30B-A3B-Instruct" },
+        { "provider": "paxsenix", "model": "qwen-3-coder-30b-a3b" }
       ]
     },
     {
@@ -320,12 +390,22 @@
       ]
     },
     {
+      "name": "mistral-small-3.2-24b",
+      "aliases": ["mistral", "mistral-small-3.2"],
+      "targets": [
+        { "provider": "aqua", "model": "mistral" },
+        { "provider": "ovh", "model": "Mistral-Small-3.2-24B-Instruct-2506" },
+        { "provider": "paxsenix", "model": "mistral-small-3.2-24b" }
+      ]
+    },
+    {
       "name": "mistral-large-3",
       "aliases": ["mistral-large", "mistral-3"],
       "provider": "ollama",
+      "pro": true,
       "targets": [
-        { "provider": "navy", "model": "mistral-large-2512" },
         { "provider": "literouter", "model": "mistral-large-3:free" },
+        { "provider": "navy", "model": "mistral-large-2512" },
         { "provider": "ollama", "model": "mistral-large-3:675b-cloud" }
       ]
     }
